@@ -1,52 +1,49 @@
--- Zaickie Grow A Garden Egg ESP with Clickable, Draggable Logo
--- For Delta Executor
+-- Zaickie Grow A Garden Egg ESP with Toggle UI
+-- Made for Delta Executor
 
--- SERVICES
+-- Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 
 -- SETTINGS
 local ESP_COLOR = Color3.fromRGB(255, 0, 0) -- Red
 local ESP_TEXT = "🥚 EGG"
 local TITLE = "Zaickie"
-local LOGO_ID = "rbxassetid://1234567890" -- Replace with your logo ID!
 
--- GUI BASE
+-- UI LIBRARY
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "ZaickieESP"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
--- === LOGO FRAME ===
-local LogoFrame = Instance.new("Frame", ScreenGui)
-LogoFrame.Size = UDim2.new(0, 120, 0, 140)
-LogoFrame.Position = UDim2.new(0, 20, 0, 200)
-LogoFrame.BackgroundTransparency = 1
+-- LOADING SCREEN
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 300, 0, 150)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Frame.BorderSizePixel = 0
+Frame.BackgroundTransparency = 0.2
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
 
-local LogoImage = Instance.new("ImageButton", LogoFrame)
-LogoImage.Size = UDim2.new(0, 100, 0, 100)
-LogoImage.Position = UDim2.new(0.5, -50, 0, 0)
-LogoImage.BackgroundTransparency = 1
-LogoImage.Image = LOGO_ID
+local Label = Instance.new("TextLabel", Frame)
+Label.Size = UDim2.new(1, 0, 1, 0)
+Label.Text = TITLE .. "\nLoading..."
+Label.TextColor3 = ESP_COLOR
+Label.TextStrokeTransparency = 0
+Label.BackgroundTransparency = 1
+Label.TextScaled = true
+Label.Font = Enum.Font.SourceSansBold
 
-local LogoText = Instance.new("TextLabel", LogoFrame)
-LogoText.Size = UDim2.new(1, 0, 0, 30)
-LogoText.Position = UDim2.new(0, 0, 1, -30)
-LogoText.Text = TITLE
-LogoText.TextColor3 = ESP_COLOR
-LogoText.BackgroundTransparency = 1
-LogoText.TextScaled = true
-LogoText.TextStrokeTransparency = 0
+wait(2)
+Frame:Destroy()
 
--- === TOGGLE BOX ===
-local ToggleFrame = Instance.new("Frame", LogoFrame)
+-- TOGGLE BUTTON
+local ToggleFrame = Instance.new("Frame", ScreenGui)
 ToggleFrame.Size = UDim2.new(0, 200, 0, 50)
-ToggleFrame.Position = UDim2.new(0.5, -100, 1, 10)
+ToggleFrame.Position = UDim2.new(0, 20, 0, 100)
 ToggleFrame.BackgroundTransparency = 0.3
 ToggleFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-ToggleFrame.Visible = false -- Hidden initially
 
 local ToggleLabel = Instance.new("TextLabel", ToggleFrame)
 ToggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
@@ -63,101 +60,61 @@ ToggleButton.TextColor3 = Color3.new(1, 0, 0)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 ToggleButton.TextScaled = true
 
--- === CLICK LOGO TO SHOW/HIDE TOGGLE ===
-LogoImage.MouseButton1Click:Connect(function()
-	ToggleFrame.Visible = not ToggleFrame.Visible
-end)
-
--- === MAKE LOGO FRAME DRAGGABLE ===
-local dragging = false
-local dragInput, dragStart, startPos
-
-LogoFrame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = LogoFrame.Position
-
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
-
-LogoFrame.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		dragInput = input
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		local delta = input.Position - dragStart
-		LogoFrame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
-	end
-end)
-
--- === EGG ESP FUNCTIONALITY ===
+-- EGG ESP FUNCTIONALITY
 local EggESPEnabled = false
-
 local function createESP(part)
-	if part:FindFirstChild("ZaickieESP") then return end
-	local billboard = Instance.new("BillboardGui")
-	billboard.Name = "ZaickieESP"
-	billboard.Adornee = part
-	billboard.Size = UDim2.new(0, 100, 0, 40)
-	billboard.AlwaysOnTop = true
+    if part:FindFirstChild("ZaickieESP") then return end
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ZaickieESP"
+    billboard.Adornee = part
+    billboard.Size = UDim2.new(0, 100, 0, 40)
+    billboard.AlwaysOnTop = true
 
-	local textLabel = Instance.new("TextLabel", billboard)
-	textLabel.Size = UDim2.new(1, 0, 1, 0)
-	textLabel.Text = ESP_TEXT
-	textLabel.TextColor3 = ESP_COLOR
-	textLabel.BackgroundTransparency = 1
-	textLabel.TextStrokeTransparency = 0
-	textLabel.TextScaled = true
+    local textLabel = Instance.new("TextLabel", billboard)
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.Text = ESP_TEXT
+    textLabel.TextColor3 = ESP_COLOR
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextStrokeTransparency = 0
+    textLabel.TextScaled = true
 
-	billboard.Parent = part
+    billboard.Parent = part
 end
 
 local function updateESP()
-	for _, obj in pairs(workspace:GetDescendants()) do
-		if obj:IsA("BasePart") and obj.Name:lower():find("egg") then
-			createESP(obj)
-		end
-	end
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Name:lower():find("egg") then
+            createESP(obj)
+        end
+    end
 end
 
 RunService.RenderStepped:Connect(function()
-	if EggESPEnabled then
-		updateESP()
-	else
-		for _, obj in pairs(workspace:GetDescendants()) do
-			if obj:IsA("BasePart") then
-				local esp = obj:FindFirstChild("ZaickieESP")
-				if esp then
-					esp:Destroy()
-				end
-			end
-		end
-	end
+    if EggESPEnabled then
+        updateESP()
+    else
+        -- Remove ESPs
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                local esp = obj:FindFirstChild("ZaickieESP")
+                if esp then
+                    esp:Destroy()
+                end
+            end
+        end
+    end
 end)
 
+-- BUTTON LOGIC
 ToggleButton.MouseButton1Click:Connect(function()
-	EggESPEnabled = not EggESPEnabled
-	if EggESPEnabled then
-		ToggleButton.Text = "ON"
-		ToggleButton.TextColor3 = Color3.fromRGB(0, 255, 0)
-	else
-		ToggleButton.Text = "OFF"
-		ToggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
-	end
+    EggESPEnabled = not EggESPEnabled
+    if EggESPEnabled then
+        ToggleButton.Text = "ON"
+        ToggleButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+    else
+        ToggleButton.Text = "OFF"
+        ToggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end
 end)
 
 print(TITLE .. " ESP Loaded ✅")
