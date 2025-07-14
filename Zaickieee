@@ -1,0 +1,120 @@
+-- Zaickie Grow A Garden Egg ESP with Toggle UI
+-- Made for Delta Executor
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- SETTINGS
+local ESP_COLOR = Color3.fromRGB(255, 0, 0) -- Red
+local ESP_TEXT = "🥚 EGG"
+local TITLE = "Zaickie"
+
+-- UI LIBRARY
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ZaickieESP"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- LOADING SCREEN
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 300, 0, 150)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Frame.BorderSizePixel = 0
+Frame.BackgroundTransparency = 0.2
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+local Label = Instance.new("TextLabel", Frame)
+Label.Size = UDim2.new(1, 0, 1, 0)
+Label.Text = TITLE .. "\nLoading..."
+Label.TextColor3 = ESP_COLOR
+Label.TextStrokeTransparency = 0
+Label.BackgroundTransparency = 1
+Label.TextScaled = true
+Label.Font = Enum.Font.SourceSansBold
+
+wait(2)
+Frame:Destroy()
+
+-- TOGGLE BUTTON
+local ToggleFrame = Instance.new("Frame", ScreenGui)
+ToggleFrame.Size = UDim2.new(0, 200, 0, 50)
+ToggleFrame.Position = UDim2.new(0, 20, 0, 100)
+ToggleFrame.BackgroundTransparency = 0.3
+ToggleFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+
+local ToggleLabel = Instance.new("TextLabel", ToggleFrame)
+ToggleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+ToggleLabel.Text = "Egg ESP"
+ToggleLabel.TextColor3 = ESP_COLOR
+ToggleLabel.BackgroundTransparency = 1
+ToggleLabel.TextScaled = true
+
+local ToggleButton = Instance.new("TextButton", ToggleFrame)
+ToggleButton.Size = UDim2.new(0.3, 0, 1, 0)
+ToggleButton.Position = UDim2.new(0.7, 0, 0, 0)
+ToggleButton.Text = "OFF"
+ToggleButton.TextColor3 = Color3.new(1, 0, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButton.TextScaled = true
+
+-- EGG ESP FUNCTIONALITY
+local EggESPEnabled = false
+local function createESP(part)
+    if part:FindFirstChild("ZaickieESP") then return end
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ZaickieESP"
+    billboard.Adornee = part
+    billboard.Size = UDim2.new(0, 100, 0, 40)
+    billboard.AlwaysOnTop = true
+
+    local textLabel = Instance.new("TextLabel", billboard)
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.Text = ESP_TEXT
+    textLabel.TextColor3 = ESP_COLOR
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextStrokeTransparency = 0
+    textLabel.TextScaled = true
+
+    billboard.Parent = part
+end
+
+local function updateESP()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Name:lower():find("egg") then
+            createESP(obj)
+        end
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    if EggESPEnabled then
+        updateESP()
+    else
+        -- Remove ESPs
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                local esp = obj:FindFirstChild("ZaickieESP")
+                if esp then
+                    esp:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+-- BUTTON LOGIC
+ToggleButton.MouseButton1Click:Connect(function()
+    EggESPEnabled = not EggESPEnabled
+    if EggESPEnabled then
+        ToggleButton.Text = "ON"
+        ToggleButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+    else
+        ToggleButton.Text = "OFF"
+        ToggleButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end
+end)
+
+print(TITLE .. " ESP Loaded ✅")
