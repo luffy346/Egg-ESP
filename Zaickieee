@@ -1,5 +1,4 @@
--- Zaickie Grow A Garden Egg ESP Script
--- Made for Delta Executor
+
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
